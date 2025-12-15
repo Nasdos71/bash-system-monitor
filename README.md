@@ -22,19 +22,26 @@ chmod +x system_monitor.sh
 ```
 
 Current menu (CLI):
-- 1) CPU (info + usage + temps if available) — refreshes every ~2s until any key
+- 1) CPU (info + usage + temps if available, with bar + alerts) — refreshes every ~2s until any key
 - 2) Memory info — refreshes every ~2s until any key
 - 3) Disk usage — refreshes every ~2s until any key
 - 4) Top processes — refreshes every ~2s until any key
 - 5) GPU info — refreshes every ~2s until any key
-- 6) Show everything (one-shot; press Enter to return)
-- d) Dialog mode (popup menus/boxes, requires dialog/whiptail)
-- w) Window mode (zenity GUI popups, requires zenity)
+- 6) Network (interfaces, RX/TX, IPs) — refreshes every ~2s until any key
+- 7) System info (kernel, distro, uptime, users, battery) — refreshes every ~2s until any key
+- 8) Show everything (one-shot; press Enter to return)
+- 9) Start logging FULL comprehensive snapshots to monitor.log (all sections, for report generation)
+- d) Dialog mode (popup menus/boxes, auto-refresh; includes all features; requires dialog/whiptail)
+- w) Window mode (zenity GUI popups, auto-refresh; includes all features; requires zenity)
 - 0) Exit
 
 GUI refresh notes:
-- Dialog mode: auto-refreshes every ~2s; Stop/Cancel/ESC exits.
-- Window (zenity) mode: auto-refreshes every ~2s; Stop/Cancel closes.
+- Dialog mode: auto-refreshes every ~2s; Stop/Cancel/ESC exits. Includes all features (CPU, Memory, Disk, Processes, GPU, Network, System info).
+- Window (zenity) mode: auto-refreshes every ~2s; Stop/Cancel closes. Includes all features (CPU, Memory, Disk, Processes, GPU, Network, System info).
+
+Logging:
+- Option 9 logs FULL comprehensive snapshots (all sections: CPU, Memory, Disk, Processes, GPU, Network, System info) every ~2s to `monitor.log`.
+- Perfect for generating reports later - captures complete system state at each timestamp.
 
 Suggested packages (Ubuntu / Debian):
 ```bash

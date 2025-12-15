@@ -1,0 +1,37 @@
+1-Report generator from logs
+    Parse monitor.log and generate an HTML report with:
+        Charts/graphs (CPU/RAM over time)
+        Summary statistics (avg, min, max, peaks)
+        Timeline visualization
+    Use gnuplot or simple ASCII art charts, or generate HTML with embedded JavaScript charts
+
+2-rocess management
+    Kill processes (with confirmation)
+    Change priority (nice/renice)
+    Show process tree hierarchy (pstree-style)
+    Filter by user, CPU threshold, memory threshold
+
+3-Network connections & services
+    Show active connections (ss/netstat)
+    List listening ports and associated processes
+    Show systemd service status (running/failed)
+    Network bandwidth per connection
+
+4-Historical trends & analysis
+    Compare current vs previous snapshot
+    Show trends: "CPU usage increased 20% in last 5 minutes"
+    Peak detection: "Memory peaked at 95% at 14:32"
+    Simple predictions: "At current rate, disk will fill in X days"
+
+5-System health score
+    Calculate an overall health score (0-100) based on:
+    CPU load
+    Memory pressure
+    Disk space
+    Temperature warnings
+    Color-coded status (green/yellow/red)
+
+6-Export & data formats
+    Export current snapshot to CSV/JSON
+    Export log data to CSV for Excel analysis
+    Generate a summary PDF (using enscript or similar)
