@@ -44,6 +44,8 @@ sudo apt install -y sysstat lm-sensors pciutils dialog
 sudo apt install -y zenity
 ```
 
+Docker image already includes all required deps (bash, procps, sysstat, lm-sensors, pciutils, dialog, zenity, ca-certificates).
+
 > Note: Some advanced features (like GPU usage/temperature) may require extra tools such as `nvidia-smi`, `lspci`, or `sensors` to be installed on the target system. The script will try to detect what is available and degrade gracefully.
 > For CPU temperatures, install and run `sensors` (`lm-sensors`) or rely on thermal sysfs if present.
 

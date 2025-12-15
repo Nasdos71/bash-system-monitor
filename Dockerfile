@@ -11,6 +11,7 @@ RUN apt-get update && \
         lm-sensors \
         pciutils \
         dialog \
+        zenity \
         ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
