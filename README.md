@@ -28,12 +28,20 @@ Current menu (CLI):
 - 4) Top processes — refreshes every ~2s until any key
 - 5) GPU info — refreshes every ~2s until any key
 - 6) Show everything (one-shot; press Enter to return)
+- d) Dialog mode (popup menus/boxes, requires dialog/whiptail)
+- w) Window mode (zenity GUI popups, requires zenity)
 - 0) Exit
+
+GUI refresh notes:
+- Dialog mode: auto-refreshes every ~2s; Stop/Cancel/ESC exits.
+- Window (zenity) mode: auto-refreshes every ~2s; Stop/Cancel closes.
 
 Suggested packages (Ubuntu / Debian):
 ```bash
 sudo apt update
 sudo apt install -y sysstat lm-sensors pciutils dialog
+# For window mode:
+sudo apt install -y zenity
 ```
 
 > Note: Some advanced features (like GPU usage/temperature) may require extra tools such as `nvidia-smi`, `lspci`, or `sensors` to be installed on the target system. The script will try to detect what is available and degrade gracefully.

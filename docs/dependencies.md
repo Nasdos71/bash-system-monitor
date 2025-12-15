@@ -2,19 +2,20 @@
 
 These are the packages/tools the bash monitor expects. Install them on native Linux, or bake them into Docker (already added in the Dockerfile).
 
-### Required (for full CLI features)
+### Required (for full CLI/window features)
 - `bash`
 - `procps` (ps, top, uptime)
 - `sysstat` (mpstat for CPU usage)
 - `lm-sensors` (sensors for temps)
 - `pciutils` (lspci for GPU device listing)
-- `dialog` (for future text-based GUI)
+- `dialog` (for text-based GUI mode)
+- `zenity` (for windowed GUI mode)
 - `ca-certificates` (good practice)
 
 Install on Ubuntu/Debian:
 ```bash
 sudo apt update
-sudo apt install -y bash procps sysstat lm-sensors pciutils dialog ca-certificates
+sudo apt install -y bash procps sysstat lm-sensors pciutils dialog zenity ca-certificates
 ```
 
 After installing `lm-sensors` on bare metal (not usually useful on WSL):

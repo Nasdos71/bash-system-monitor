@@ -5,6 +5,11 @@
 
 set -u
 
+# Modes:
+# - default: CLI menu
+# - --dialog / -d : dialog-based menu (requires dialog/whiptail)
+# - --window / -w : windowed popups via zenity (requires zenity)
+
 #######################################
 # Helper: check if a command exists
 #######################################
@@ -231,6 +236,162 @@ gpu_view() {
 }
 
 #######################################
+# WINDOW MODE (zenity)
+#######################################
+need_zenity() {
+    have_cmd zenity
+}
+
+zenity_show_box() {
+    local title="$1"
+    local content="$2"
+    # Use a temp file to avoid process substitution incompatibilities
+    local tmp
+    tmp=$(mktemp)
+    printf "%s\n" "$content" > "$tmp"
+    zenity --width=800 --height=600 --text-info --title="$title" --no-wrap --filename="$tmp"
+    rm -f "$tmp"
+}
+
+zenity_collect_and_show() {
+    local title="$1"
+    local fn="$2"
+    local buf
+    buf="$($fn 2>&1)"
+    zenity_show_box "$title" "$buf"
+}
+
+zenity_live_loop() {
+    local title="$1"
+    local fn="$2"
+    local delay=2
+    while true; do
+        local buf
+        buf="$($fn 2>&1)"
+        zenity_show_box "$title" "$buf" --timeout "$delay"
+        local status=$?
+        # zenity exit codes: 0=OK,1=Cancel,5=timeout
+        case "$status" in
+            0|1) break ;;
+            5) continue ;;
+            *) break ;;
+        esac
+    done
+}
+
+window_mode() {
+    if ! need_zenity; then
+        echo "zenity not installed. Install 'zenity' for windowed mode."
+        return
+    fi
+    while true; do
+        local choice
+        choice=$(zenity --list --title="System Monitor" --text="Select:" --column="Option" --column="Description" \
+            1 "CPU (info + usage + temps)" \
+            2 "Memory info" \
+            3 "Disk usage" \
+            4 "Top processes" \
+            5 "GPU info" \
+            6 "Show everything (one-shot)" \
+            0 "Exit" \
+            2>/dev/null) || return
+        case "$choice" in
+            1) zenity_live_loop "CPU (info + usage + temps)" "cpu_view" ;;
+            2) zenity_live_loop "Memory info" "mem_view" ;;
+            3) zenity_live_loop "Disk usage" "disk_view" ;;
+            4) zenity_live_loop "Top processes" "top_view" ;;
+            5) zenity_live_loop "GPU info" "gpu_view" ;;
+            6)
+                local buf
+                buf="$(cpu_view; mem_view; disk_view; top_view; gpu_view)"
+                zenity_show_box "Everything" "$buf"
+                ;;
+            0) return ;;
+        esac
+    done
+}
+
+#######################################
+# DIALOG MODE
+#######################################
+need_dialog() {
+    if have_cmd dialog; then
+        DIALOG_CMD=dialog
+    elif have_cmd whiptail; then
+        DIALOG_CMD=whiptail
+    else
+        return 1
+    fi
+    return 0
+}
+
+dialog_show_box() {
+    local title="$1"
+    local content="$2"
+    "$DIALOG_CMD" --backtitle "System Monitor" --title "$title" --msgbox "$content" 20 100
+}
+
+dialog_collect_and_show() {
+    local title="$1"
+    local fn="$2"
+    local buf
+    buf="$($fn 2>&1)"
+    dialog_show_box "$title" "$buf"
+}
+
+dialog_live_loop() {
+    local title="$1"
+    local fn="$2"
+    local delay=2
+    while true; do
+        local buf
+        buf="$($fn 2>&1)"
+        "$DIALOG_CMD" --backtitle "System Monitor" --title "$title" \
+            --ok-label "Stop" --timeout "$delay" --msgbox "$buf" 20 100
+        local status=$?
+        # dialog exit: 0 OK, 1 Cancel, 255 ESC/timeout. We treat OK/Cancel/ESC as stop; timeout continues.
+        if [ "$status" -eq 255 ]; then
+            continue
+        fi
+        break
+    done
+}
+
+dialog_mode() {
+    if ! need_dialog; then
+        echo "dialog/whiptail not installed. Install 'dialog' and retry."
+        return
+    fi
+    while true; do
+        local choice
+        choice=$("$DIALOG_CMD" --clear --backtitle "System Monitor" --title "Menu" --menu "Select:" 15 60 7 \
+            1 "CPU (info + usage + temps)" \
+            2 "Memory info" \
+            3 "Disk usage" \
+            4 "Top processes" \
+            5 "GPU info" \
+            6 "Show everything (one-shot)" \
+            0 "Exit" \
+            2>&1 >/dev/tty)
+        [ $? -ne 0 ] && clear && return
+        clear
+        case "$choice" in
+            1) dialog_live_loop "CPU (info + usage + temps)" "cpu_view" ;;
+            2) dialog_live_loop "Memory info" "mem_view" ;;
+            3) dialog_live_loop "Disk usage" "disk_view" ;;
+            4) dialog_live_loop "Top processes" "top_view" ;;
+            5) dialog_live_loop "GPU info" "gpu_view" ;;
+            6)
+                local buf
+                buf="$(cpu_view; mem_view; disk_view; top_view; gpu_view)"
+                dialog_show_box "Everything" "$buf"
+                ;;
+            0) return ;;
+        esac
+    done
+}
+
+#######################################
 # MAIN MENU (CLI VERSION)
 #######################################
 main_menu() {
@@ -242,6 +403,8 @@ main_menu() {
         echo "4) Top processes"
         echo "5) GPU info"
         echo "6) Show everything (one-shot)"
+        echo "d) Dialog mode"
+        echo "w) Window mode (zenity)"
         echo "0) Exit"
         echo "========================================================"
         printf "Choose an option: "
@@ -264,6 +427,12 @@ main_menu() {
                 echo
                 echo "Press Enter to return to menu..."
                 read -r _
+                ;;
+            d|D)
+                dialog_mode
+                ;;
+            w|W)
+                window_mode
                 ;;
             0)
                 echo "Exiting."
