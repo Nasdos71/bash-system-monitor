@@ -1,0 +1,32 @@
+# Node modules
+dashboard/node_modules
+node_modules
+
+# Build outputs
+dashboard/dist
+
+# Git
+.git
+.gitignore
+
+# Logs
+*.log
+monitor.log
+
+# Reports
+*.html
+!dashboard/index.html
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Docker
+docker-compose*.yml
+.dockerignore
