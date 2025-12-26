@@ -1,0 +1,77 @@
+services:
+  # Main dashboard service (headless - web only)
+  system-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: system-monitor-dashboard
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    # Mount for accessing host system metrics
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    environment:
+      - HOST_PROC=/host/proc
+      - HOST_SYS=/host/sys
+
+  # GUI mode with X11 forwarding (for YAD/Zenity)
+  system-monitor-gui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: system-monitor-gui
+    ports:
+      - "8081:8080"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      # X11 socket for GUI
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    environment:
+      - DISPLAY=${DISPLAY}
+      - HOST_PROC=/host/proc
+      - HOST_SYS=/host/sys
+    # Need host network for some GUI features
+    network_mode: host
+    profiles:
+      - gui
+
+  # Interactive CLI mode
+  system-monitor-cli:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: system-monitor-cli
+    stdin_open: true
+    tty: true
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    environment:
+      - HOST_PROC=/host/proc
+      - HOST_SYS=/host/sys
+    command: bash ./system_monitor.sh
+    profiles:
+      - cli
+
+  # Development mode - React dev server with hot reload
+  dashboard-dev:
+    image: node:20-alpine
+    container_name: dashboard-dev
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./dashboard:/app
+      - /app/node_modules
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    profiles:
+      - dev

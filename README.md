@@ -1,62 +1,66 @@
-## Bash System Monitor (OS Course Project)
+## Bash System Monitor v2.0 🖥️
+<div align="center">
 
-This project is a **pure bash** system monitor that shows the machine state, similar to a simple task manager.
+![Version](https://img.shields.io/badge/version-2.0.0-blue.svg?style=flat-square)
+![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20WSL%20%7C%20Android-success.svg?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-purple.svg?style=flat-square)
+![Built With](https://img.shields.io/badge/built%20with-Bash%20%7C%20React%20%7C%20AI-orange.svg?style=flat-square)
 
-### Features (planned)
-- **CPU**: usage, load averages, basic info.
-- **Memory**: RAM and swap usage.
-- **Disk**: usage per filesystem.
-- **Processes**: top processes by CPU/RAM.
-- **GPU**: basic info, usage, and temperature *when supported by the system*.
-- **Text-based GUI (bonus)**: menu + popup-style interface using standard Linux tools.
-- **Android/Termux support (bonus)**: run the monitor in Termux on Android with graceful fallbacks.
+**The ultimate dependency-free system monitor, now with AI capabilities and a Web Dashboard.**
+</div>
 
-### Main Script
-- `system_monitor.sh` — entry point script.
+---
 
-Run (on Linux / WSL / Termux):
+### 🚀 What's New?
+- **📱 Android Support**: Run natively on your phone via Termux (Battery, WiFi, Sensors).
+- **🧠 AI Insights**: Integrated Gemini AI analysis to detect system bottlenecks.
+- **📊 Web Dashboard**: A modern React-based real-time dashboard.
+- **📈 HTML Reports**: Generate interactive charts for post-mortem analysis.
+- **🖥️ Task Manager**: New YAD-based GUI with process management.
+
+---
+
+### 📖 Documentation
+Detailed guides in the `docs/` directory:
+
+- **[User Guide](docs/USER_GUIDE.md)**: Manual for CLI, AI features, and Report generation.
+- **[Installation Guide](docs/INSTALLATION.md)**: Setup for Linux, Termux, and Node.js.
+- **[Architecture](docs/ARCHITECTURE.md)**: System design and data flow.
+- **[Screenshots Guide](docs/SCREENSHOTS_GUIDE.md)**: How to capture evidence.
+
+---
+
+### ✨ Key Features
+- **CPU**: Load averages, frequency, and real-time per-core usage.
+- **Memory**: Detailed RAM and Swap breakdown (including visuals).
+- **Disk**: Filesystem usage, Inode tracking, and I/O stats.
+- **Network**: Real-time traffic, IP info, and interface status.
+- **GPU**: NVIDIA (`nvidia-smi`) and Android Adreno support.
+- **Processes**: Interactive process list with "Kill" functionality.
+
+### 🔌 Modes
+1.  **CLI**: `./system_monitor.sh` (Standard)
+2.  **TUI**: `./system_monitor.sh -d` (Dialog)
+3.  **GUI**: `./system_monitor.sh -w` (Zenity)
+4.  **Task Manager**: `./system_monitor.sh -y` (YAD)
+
+---
+
+### 📦 Quick Start (Web Dashboard)
+To run the new React dashboard:
 
 ```bash
-chmod +x system_monitor.sh
-./system_monitor.sh
+# 1. Generate Data
+./generate_json.sh
+
+# 2. Start Server
+cd dashboard
+npm install
+npm run dev
 ```
 
-Current menu (CLI):
-- 1) CPU (info + usage + temps if available, with bar + alerts) — refreshes every ~2s until any key
-- 2) Memory info — refreshes every ~2s until any key
-- 3) Disk usage — refreshes every ~2s until any key
-- 4) Top processes — refreshes every ~2s until any key
-- 5) GPU info — refreshes every ~2s until any key
-- 6) Network (interfaces, RX/TX, IPs) — refreshes every ~2s until any key
-- 7) System info (kernel, distro, uptime, users, battery) — refreshes every ~2s until any key
-- 8) Show everything (one-shot; press Enter to return)
-- 9) Start logging FULL comprehensive snapshots to monitor.log (all sections, for report generation)
-- d) Dialog mode (popup menus/boxes, auto-refresh; includes all features; requires dialog/whiptail)
-- w) Window mode (zenity GUI popups, auto-refresh; includes all features; requires zenity)
-- 0) Exit
+---
+*Created for OS Course Project (Term 5)*
 
-GUI refresh notes:
-- Dialog mode: auto-refreshes every ~2s; Stop/Cancel/ESC exits. Includes all features (CPU, Memory, Disk, Processes, GPU, Network, System info).
-- Window (zenity) mode: auto-refreshes every ~2s; Stop/Cancel closes. Includes all features (CPU, Memory, Disk, Processes, GPU, Network, System info).
-
-Logging:
-- Option 9 logs FULL comprehensive snapshots (all sections: CPU, Memory, Disk, Processes, GPU, Network, System info) every ~2s to `monitor.log`.
-- Perfect for generating reports later - captures complete system state at each timestamp.
-
-Suggested packages (Ubuntu / Debian):
-```bash
-sudo apt update
-sudo apt install -y sysstat lm-sensors pciutils dialog
-# For window mode:
-sudo apt install -y zenity
-```
-
-Docker image already includes all required deps (bash, procps, sysstat, lm-sensors, pciutils, dialog, zenity, ca-certificates).
-
-> Note: Some advanced features (like GPU usage/temperature) may require extra tools such as `nvidia-smi`, `lspci`, or `sensors` to be installed on the target system. The script will try to detect what is available and degrade gracefully.
-> For CPU temperatures, install and run `sensors` (`lm-sensors`) or rely on thermal sysfs if present.
-
-### Dependencies doc
-See `docs/dependencies.md` for the full list (native + Docker + GPU notes).
 
 
